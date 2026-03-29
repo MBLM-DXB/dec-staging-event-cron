@@ -13,7 +13,7 @@ export interface CrmEvent {
   startDate: string;
   endDate: string;
   location: string | null;
-  eventAudiences: string | null;
+  eventAudiences: string[] | null;
   eventSectors: string[];
   eventId: number;
   eventType: string;
@@ -45,6 +45,7 @@ export interface Env {
   NOTIFICATION_EMAIL: string;
   NOTIFICATION_FROM_EMAIL: string;
   CLOUDFLARE_WEBHOOK: string;
+  CRON_LOCK: KVNamespace;
 }
 
 // Response types

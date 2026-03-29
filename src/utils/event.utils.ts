@@ -3,6 +3,13 @@ import type {
   UmbracoEvent,
   CreateEventRequest,
 } from "../types/events.types";
+import { location as locationMap } from "../constants/location";
+
+function mapLocationCodesToArray(locationCodes: string): string[] {
+  return locationCodes
+    .split(",")
+    .map((code) => locationMap[code.trim() as keyof typeof locationMap] ?? code.trim());
+}
 
 /**
  * Event Utilities for CRM to Umbraco Data Mapping
@@ -718,13 +725,7 @@ export function mapCrmEventToUmbraco(
       $invariant: crmEvent.eventVenues || [],
     },
     newEventVenue: {
-      $invariant: [],
-    },
-    audience: {
-      $invariant: crmEvent.eventAudiences ? [crmEvent.eventAudiences] : [],
-    },
-    industry: {
-      $invariant: crmEvent.eventSectors || [],
+      $invariant: crmEvent.location ? mapLocationCodesToArray(crmEvent.location) : [],
     },
     pageBlocks: buildPageBlocks(crmEvent),
   };
@@ -818,13 +819,7 @@ export function mapCrmEventForUpdate(
       $invariant: crmEvent.eventVenues || [],
     },
     newEventVenue: {
-      $invariant: [],
-    },
-    audience: {
-      $invariant: crmEvent.eventAudiences ? [crmEvent.eventAudiences] : [],
-    },
-    industry: {
-      $invariant: crmEvent.eventSectors || [],
+      $invariant: crmEvent.location ? mapLocationCodesToArray(crmEvent.location) : [],
     },
     // Update page blocks while preserving existing structure and GUIDs
     pageBlocks: existingUmbracoEvent.pageBlocks

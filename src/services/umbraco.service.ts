@@ -102,6 +102,9 @@ export async function createUmbracoEvent(
     });
 
     if (!response.ok) {
+      const errorBody = await response.text();
+      console.error("❌ Create payload:", JSON.stringify(eventData));
+      console.error("❌ Create error response:", errorBody);
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
@@ -109,6 +112,8 @@ export async function createUmbracoEvent(
 
     // Check if the response contains an error object
     if (data.error) {
+      console.error("❌ Create payload:", JSON.stringify(eventData));
+      console.error("❌ Create error response:", JSON.stringify(data.error));
       throw new Error(
         `Umbraco API error: ${data.error.code} - ${data.error.message}`
       );
