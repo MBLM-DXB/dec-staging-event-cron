@@ -159,7 +159,7 @@ function generateExcelAttachment(summary: SyncSummary): Uint8Array {
 
 export async function sendSyncNotificationEmail(
   env: Env,
-  summary: SyncSummary
+  summary: SyncSummary,
 ): Promise<void> {
   try {
     console.log("📧 Preparing to send notification email...");
@@ -181,13 +181,13 @@ export async function sendSyncNotificationEmail(
     formData.append("to", env.NOTIFICATION_EMAIL);
     formData.append(
       "subject",
-      `[DEC Staging] CRM to Umbraco Sync Report - ${totalProcessed} Events Processed`
+      `[DEC Staging] CRM to Umbraco Sync Report - ${totalProcessed} Events Processed`,
     );
     formData.append("html", emailBody);
     formData.append(
       "attachment",
       excelBlob,
-      `sync-report-${new Date().toISOString().split("T")[0]}.xlsx`
+      `sync-report-${new Date().toISOString().split("T")[0]}.xlsx`,
     );
     console.log("📧 Sending request to Mailgun...");
     const response = await fetch(`${env.MAILGUN_API_BASE_URL}/messages`, {
@@ -231,7 +231,7 @@ function buildEmailBody(summary: SyncSummary): string {
     eventRows += `
         <tr>
           <td style="padding:15px 25px 5px;">
-            <p style="margin:0 0 8px;font-family:Verdana,Helvetica,Arial,sans-serif;font-size:13px;font-weight:bold;color:#9b895b;">
+            <p style="margin:0 0 8px;font-family:Verdana,Helvetica,Arial,sans-serif;font-size:13px;font-weight:bold;color:#082B49;">
               Updated Events (${summary.updatedEvents.length})
             </p>
           </td>
@@ -310,42 +310,26 @@ function buildEmailBody(summary: SyncSummary): string {
 <body style="margin:0;padding:0;background-color:#f4f4f4;font-family:Verdana,Helvetica,Arial,sans-serif;">
 
   <!-- Header: black background with two logo images side by side -->
-  <div style="background-color:#000000;margin:0 auto;max-width:600px;">
+    <div style="margin:0 auto;max-width:600px;background-color:#ffffff;">
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse:collapse;">
       <tr>
-        <td width="50%" align="center" style="padding:10px 25px;">
-          <img src="https://media.umbraco.io/dev-dwtc/fvsmadsf/left.jpg"
-               alt="DWTC Logo Left"
-               style="width:100%;max-width:250px;height:auto;display:block;border:none;" />
-        </td>
-        <td width="50%" align="left" style="padding:20px 0 10px 20px;">
-          <img src="https://media.umbraco.io/dev-dwtc/lcjn5fke/en_01_02.jpg"
-               alt="DWTC Logo Right"
-               style="width:100%;max-width:280px;height:auto;display:block;border:none;" />
+        <td width="100%" align="center" style="padding:0;">
+          <img src="https://media.umbraco.io/dev-dwtc/43zno3k4/dec_internal-confirmation-e-mail_header_v3.png"
+               alt="DEC"
+               style="width:100%;max-width:600px;height:auto;display:block;border:none;" />
         </td>
       </tr>
     </table>
   </div>
 
-  <!-- Hero / Banner image -->
-  <div style="margin:0 auto;max-width:600px;">
-    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse:collapse;">
-      <tr>
-        <td>
-          <img src="https://media.umbraco.io/dev-dwtc/cmsmkss5/uae-partnership.jpg"
-               alt="UAE Partnership"
-               style="width:100%;height:auto;display:block;border:none;" />
-        </td>
-      </tr>
-    </table>
-  </div>
+
 
   <!-- Greeting -->
   <div style="background-color:#ffffff;margin:0 auto;max-width:600px;">
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse:collapse;">
       <tr>
         <td align="center" style="padding:20px 25px 5px;">
-          <h1 style="margin:0;line-height:22px;font-family:Verdana,Helvetica,Arial,sans-serif;font-size:20px;color:#9b895b;text-align:center;">
+          <h1 style="margin:0;line-height:22px;font-family:Verdana,Helvetica,Arial,sans-serif;font-size:20px;color:#082B49;text-align:center;">
             DEC Staging — CRM to Umbraco Sync Report
           </h1>
         </td>
@@ -393,10 +377,16 @@ function buildEmailBody(summary: SyncSummary): string {
   }
 
   <!-- Footer -->
-  <div style="margin:0 auto;max-width:600px;padding:15px 25px;">
-    <p style="margin:0;font-family:Verdana,Helvetica,Arial,sans-serif;font-size:11px;color:#999999;text-align:center;">
-      This is an automated notification from the DWTC CRM to Umbraco sync service. Please do not reply to this email.
-    </p>
+   <div style="margin:0 auto;max-width:600px;background-color:#ffffff;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse:collapse;">
+      <tr>
+        <td width="100%" align="center" style="padding:0;">
+          <img src="https://media.umbraco.io/dev-dwtc/hkxdaww5/dec_visiton-confirmation-e-mail_footer_v4.png"
+               alt="DEC"
+               style="width:100%;max-width:600px;height:auto;display:block;border:none;" />
+        </td>
+      </tr>
+    </table>
   </div>
 
 </body>
