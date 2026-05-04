@@ -5,10 +5,16 @@ import type {
 } from "../types/events.types";
 import { location as locationMap } from "../constants/location";
 
-function mapLocationCodesToArray(locationCodes: string): string {
-  const mapped = locationCodes
+function mapLocationCodesToArray(locationCodes: string): string[] {
+  return locationCodes
     .split(",")
     .map((code) => locationMap[code.trim() as keyof typeof locationMap] ?? code.trim());
+}
+
+function mapLocationToHalls(locationCodes: string): string {
+  const mapped = mapLocationCodesToArray(locationCodes).map((val) =>
+    val.startsWith("Pavilion ") ? val.slice("Pavilion ".length) : val
+  );
 
   const hasNorth = mapped.some((val) => val.startsWith("N"));
   const hasSouth = mapped.some((val) => val.startsWith("S"));
@@ -644,13 +650,13 @@ export function mapCrmEventToUmbraco(
       $invariant: `"${crmEvent.lastUpdatedDate}"`,
     },
     location: {
-      $invariant: crmEvent.location || null,
+      $invariant: crmEvent.location ? mapLocationToHalls(crmEvent.location) : null,
     },
     eventVenue: {
       $invariant: crmEvent.eventVenues || [],
     },
     newEventVenue: {
-      $invariant: crmEvent.location ? mapLocationCodesToArray(crmEvent.location) : "notDefined",
+      $invariant: crmEvent.location ? mapLocationCodesToArray(crmEvent.location) : [],
     },
     pageBlocks: buildPageBlocks(crmEvent),
   };
@@ -735,13 +741,13 @@ export function mapCrmEventForUpdate(
       $invariant: `"${crmEvent.lastUpdatedDate}"`,
     },
     location: {
-      $invariant: crmEvent.location || null,
+      $invariant: crmEvent.location ? mapLocationToHalls(crmEvent.location) : null,
     },
     eventVenue: {
       $invariant: crmEvent.eventVenues || [],
     },
     newEventVenue: {
-      $invariant: crmEvent.location ? mapLocationCodesToArray(crmEvent.location) : "notDefined",
+      $invariant: crmEvent.location ? mapLocationCodesToArray(crmEvent.location) : [],
     },
     // Update page blocks while preserving existing structure and GUIDs
     pageBlocks: existingUmbracoEvent.pageBlocks

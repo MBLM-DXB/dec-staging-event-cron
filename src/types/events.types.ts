@@ -122,7 +122,7 @@ export interface CreateEventRequest {
   lastUpdatedDate: InvariantField<string>;
   location: InvariantField<string | null>;
   eventVenue?: InvariantField<string[]>;
-  newEventVenue?: InvariantField<string>;
+  newEventVenue?: InvariantField<string[]>;
   audience?: InvariantField<string[]>;
   industry?: InvariantField<string[]>;
   pageBlocks?: LocalizedField<any>;
