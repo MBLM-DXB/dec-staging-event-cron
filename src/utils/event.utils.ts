@@ -94,80 +94,6 @@ export function compareEvents(
 }
 
 /**
- * Build social networks block list structure for Umbraco
- */
-function buildSocialNetworksBlockList(socialMedia: CrmEvent["socialMedia"]) {
-  const contentData: any[] = [];
-  const layout: any[] = [];
-
-  // Only add social networks that have valid URLs from CRM data
-  const socialNetworks = [
-    {
-      key: "facebook",
-      name: "Facebook",
-      url: socialMedia?.facebook,
-    },
-    {
-      key: "linkedIn",
-      name: "LinkedIn",
-      url: socialMedia?.linkedIn,
-    },
-    {
-      key: "instagram",
-      name: "Instagram",
-      url: socialMedia?.instagram,
-    },
-    {
-      key: "youtube",
-      name: "Youtube",
-      url: socialMedia?.youtube,
-    },
-    {
-      key: "tiktok",
-      name: "TikTok",
-      url: socialMedia?.tiktok,
-    },
-  ];
-
-  socialNetworks.forEach((network) => {
-    // Only add if URL exists and is not empty/whitespace
-    if (network.url && network.url.trim() !== "") {
-      const guid = generateGuid();
-      const guidWithoutHyphens = guid.replace(/-/g, "");
-      const udi = `umb://element/${guidWithoutHyphens}`;
-
-      layout.push({ contentUdi: udi });
-      contentData.push({
-        contentTypeKey: "93f63d80-3828-4be7-9043-143bd100ca14",
-        udi: udi,
-        socialNetwork: [network.name],
-        link: [
-          {
-            icon: "icon-link",
-            name: null,
-            nodeName: null,
-            published: true,
-            queryString: null,
-            target: "_blank",
-            trashed: false,
-            udi: null,
-            url: network.url,
-          },
-        ],
-      });
-    }
-  });
-
-  const blockListStructure = {
-    layout: { "Umbraco.BlockList": layout },
-    contentData,
-    settingsData: [],
-  };
-
-  return blockListStructure;
-}
-
-/**
  * Generate a simple GUID for Umbraco element UDIs
  */
 function generateGuid(): string {
@@ -197,9 +123,6 @@ function buildPageBlocks(crmEvent: CrmEvent) {
   const arGettingHereGuid = generateGuid().replace(/-/g, "");
   const arDestinationDubaiListGuid = generateGuid().replace(/-/g, "");
   const arDestinationDubaiCardGuid = generateGuid().replace(/-/g, "");
-
-  // Build social networks for event description block (reusing existing function)
-  const socialNetworks = buildSocialNetworksBlockList(crmEvent.socialMedia);
 
   // English page blocks
   const englishBlocks = {
@@ -248,7 +171,6 @@ function buildPageBlocks(crmEvent: CrmEvent) {
             },
           ],
         }),
-        socialNetworks: socialNetworks,
       },
       // Block 3: Getting Here (static template)
       {
@@ -410,7 +332,6 @@ function buildPageBlocks(crmEvent: CrmEvent) {
             },
           ],
         }),
-        socialNetworks: socialNetworks,
       },
       // Block 3: Image Gallery (static template)
       {
@@ -554,9 +475,6 @@ function updatePageBlocks(
   existingPageBlocks: { "en-US": any; ar: any },
   crmEvent: CrmEvent
 ) {
-  // Build new social networks from CRM data
-  const socialNetworks = buildSocialNetworksBlockList(crmEvent.socialMedia);
-
   // Deep clone existing page blocks to avoid mutations
   const updatedEnglishBlocks = JSON.parse(
     JSON.stringify(existingPageBlocks["en-US"])
@@ -594,7 +512,6 @@ function updatePageBlocks(
     } else {
       delete eventDescBlock.organiserWebsite;
     }
-    eventDescBlock.socialNetworks = socialNetworks;
 
     // Keep existing organiserLogo and other fields
     // Only update if you have new logo data from CRM
@@ -632,7 +549,6 @@ function updatePageBlocks(
     } else {
       delete eventDescBlock.organiserWebsite;
     }
-    eventDescBlock.socialNetworks = socialNetworks;
 
     // Keep existing organiserLogo and other fields
     // Only update if you have new logo data from CRM
@@ -709,9 +625,6 @@ export function mapCrmEventToUmbraco(
         ],
       },
     }),
-    organiserSocialNetworks: {
-      $invariant: buildSocialNetworksBlockList(crmEvent.socialMedia),
-    },
     eventId: {
       $invariant: crmEvent.eventId.toString(),
     },
@@ -803,9 +716,6 @@ export function mapCrmEventForUpdate(
         ],
       },
     }),
-    organiserSocialNetworks: {
-      $invariant: buildSocialNetworksBlockList(crmEvent.socialMedia),
-    },
     eventId: {
       $invariant: crmEvent.eventId.toString(),
     },

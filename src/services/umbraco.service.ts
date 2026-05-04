@@ -28,7 +28,7 @@ export async function fetchUmbracoEvents(
       body: JSON.stringify({
         query: `
           query {
-            allDecEvent {
+            allDecEvent(preview: true) {
               items {
                 id
                 eventId
