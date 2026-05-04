@@ -5,10 +5,18 @@ import type {
 } from "../types/events.types";
 import { location as locationMap } from "../constants/location";
 
-function mapLocationCodesToArray(locationCodes: string): string[] {
-  return locationCodes
+function mapLocationCodesToArray(locationCodes: string): string {
+  const mapped = locationCodes
     .split(",")
     .map((code) => locationMap[code.trim() as keyof typeof locationMap] ?? code.trim());
+
+  const hasNorth = mapped.some((val) => val.startsWith("N"));
+  const hasSouth = mapped.some((val) => val.startsWith("S"));
+
+  if (hasNorth && hasSouth) return "North & South Halls";
+  if (hasNorth) return "North Halls";
+  if (hasSouth) return "South Halls";
+  return "notDefined";
 }
 
 /**
@@ -522,16 +530,20 @@ function updatePageBlocks(
   if (updatedArabicBlocks.contentData && updatedArabicBlocks.contentData[1]) {
     const eventDescBlock = updatedArabicBlocks.contentData[1];
 
-    // Update event-specific fields only
-    eventDescBlock.description = {
-      markup: `<p>${crmEvent.pageContent || ""}</p>`,
-      blocks: {
-        layout: null,
-        contentData: [],
-        settingsData: [],
-      },
-    };
-    eventDescBlock.organiserName = crmEvent.eventOrganiser || "";
+    // Preserve existing Arabic content if present, otherwise fall back to CRM
+    if (!eventDescBlock.description?.markup) {
+      eventDescBlock.description = {
+        markup: `<p>${crmEvent.pageContent || ""}</p>`,
+        blocks: {
+          layout: null,
+          contentData: [],
+          settingsData: [],
+        },
+      };
+    }
+    if (!eventDescBlock.organiserName) {
+      eventDescBlock.organiserName = crmEvent.eventOrganiser || "";
+    }
     if (crmEvent.websiteURL) {
       eventDescBlock.organiserWebsite = [
         {
@@ -638,7 +650,7 @@ export function mapCrmEventToUmbraco(
       $invariant: crmEvent.eventVenues || [],
     },
     newEventVenue: {
-      $invariant: crmEvent.location ? mapLocationCodesToArray(crmEvent.location) : [],
+      $invariant: crmEvent.location ? mapLocationCodesToArray(crmEvent.location) : "notDefined",
     },
     pageBlocks: buildPageBlocks(crmEvent),
   };
@@ -669,23 +681,23 @@ export function mapCrmEventForUpdate(
     },
     title: {
       "en-US": crmEvent.title,
-      ar: crmEvent.title,
+      ar: existingUmbracoEvent.title?.ar || crmEvent.title,
     },
     description: {
       "en-US": crmEvent.pageContent || "",
-      ar: crmEvent.pageContent || "",
+      ar: existingUmbracoEvent.description?.ar || crmEvent.pageContent || "",
     },
     metadataTitle: {
       "en-US": crmEvent.title,
-      ar: crmEvent.title,
+      ar: existingUmbracoEvent.metadataTitle?.ar || crmEvent.title,
     },
     metadataDescription: {
       "en-US": crmEvent.pageContent || "",
-      ar: crmEvent.pageContent || "",
+      ar: existingUmbracoEvent.metadataDescription?.ar || crmEvent.pageContent || "",
     },
     metadataKeywords: {
       "en-US": "",
-      ar: "",
+      ar: existingUmbracoEvent.metadataKeywords?.ar || "",
     },
     date: {
       $invariant: crmEvent.startDate,
@@ -729,7 +741,7 @@ export function mapCrmEventForUpdate(
       $invariant: crmEvent.eventVenues || [],
     },
     newEventVenue: {
-      $invariant: crmEvent.location ? mapLocationCodesToArray(crmEvent.location) : [],
+      $invariant: crmEvent.location ? mapLocationCodesToArray(crmEvent.location) : "notDefined",
     },
     // Update page blocks while preserving existing structure and GUIDs
     pageBlocks: existingUmbracoEvent.pageBlocks
