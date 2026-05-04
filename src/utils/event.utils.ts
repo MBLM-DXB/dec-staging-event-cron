@@ -8,12 +8,15 @@ import { location as locationMap } from "../constants/location";
 function mapLocationCodesToArray(locationCodes: string): string[] {
   return locationCodes
     .split(",")
-    .map((code) => locationMap[code.trim() as keyof typeof locationMap] ?? code.trim());
+    .map(
+      (code) =>
+        locationMap[code.trim() as keyof typeof locationMap] ?? code.trim(),
+    );
 }
 
 function mapLocationToHalls(locationCodes: string): string {
   const mapped = mapLocationCodesToArray(locationCodes).map((val) =>
-    val.startsWith("Pavilion ") ? val.slice("Pavilion ".length) : val
+    val.startsWith("Pavilion ") ? val.slice("Pavilion ".length) : val,
   );
 
   const hasNorth = mapped.some((val) => val.startsWith("N"));
@@ -61,13 +64,13 @@ function normalizeDateString(dateString: string): string {
 
 export function filterEventsByVenue(
   events: CrmEvent[],
-  venue: string
+  venue: string,
 ): CrmEvent[] {
   const filteredEvents = events.filter(
     (event) =>
       event.eventVenues &&
       event.eventVenues.includes(venue) &&
-      event.WebsiteStatus.toLowerCase() === "online"
+      event.WebsiteStatus.toLowerCase() === "online",
   );
   return filteredEvents;
 }
@@ -79,7 +82,7 @@ export interface SyncResult {
 
 export function compareEvents(
   crmEvents: CrmEvent[],
-  umbracoEvents: UmbracoEvent[]
+  umbracoEvents: UmbracoEvent[],
 ): SyncResult {
   const toUpdate: Array<{ umbracoEvent: UmbracoEvent; crmEvent: CrmEvent }> =
     [];
@@ -94,7 +97,7 @@ export function compareEvents(
     if (umbracoEvent) {
       const normalizedCrmDate = normalizeDateString(crmEvent.lastUpdatedDate);
       const normalizedUmbracoDate = normalizeDateString(
-        umbracoEvent.lastUpdatedDate
+        umbracoEvent.lastUpdatedDate,
       );
       if (normalizedCrmDate !== normalizedUmbracoDate) {
         toUpdate.push({ umbracoEvent, crmEvent });
@@ -487,11 +490,11 @@ function buildPageBlocks(crmEvent: CrmEvent) {
  */
 function updatePageBlocks(
   existingPageBlocks: { "en-US": any; ar: any },
-  crmEvent: CrmEvent
+  crmEvent: CrmEvent,
 ) {
   // Deep clone existing page blocks to avoid mutations
   const updatedEnglishBlocks = JSON.parse(
-    JSON.stringify(existingPageBlocks["en-US"])
+    JSON.stringify(existingPageBlocks["en-US"]),
   );
   const updatedArabicBlocks = JSON.parse(JSON.stringify(existingPageBlocks.ar));
 
@@ -585,7 +588,7 @@ function updatePageBlocks(
  */
 export function mapCrmEventToUmbraco(
   crmEvent: CrmEvent,
-  parentId?: string
+  parentId?: string,
 ): CreateEventRequest | Omit<CreateEventRequest, "parentId"> {
   const baseData = {
     name: {
@@ -650,13 +653,14 @@ export function mapCrmEventToUmbraco(
       $invariant: `"${crmEvent.lastUpdatedDate}"`,
     },
     location: {
-      $invariant: crmEvent.location ? mapLocationToHalls(crmEvent.location) : null,
-    },
-    eventVenue: {
-      $invariant: crmEvent.eventVenues || [],
+      $invariant: crmEvent.location
+        ? mapLocationToHalls(crmEvent.location)
+        : null,
     },
     newEventVenue: {
-      $invariant: crmEvent.location ? mapLocationCodesToArray(crmEvent.location) : [],
+      $invariant: crmEvent.location
+        ? mapLocationCodesToArray(crmEvent.location)
+        : [],
     },
     pageBlocks: buildPageBlocks(crmEvent),
   };
@@ -678,7 +682,7 @@ export function mapCrmEventToUmbraco(
  */
 export function mapCrmEventForUpdate(
   crmEvent: CrmEvent,
-  existingUmbracoEvent: any
+  existingUmbracoEvent: any,
 ): Partial<CreateEventRequest> {
   return {
     name: {
@@ -699,7 +703,10 @@ export function mapCrmEventForUpdate(
     },
     metadataDescription: {
       "en-US": crmEvent.pageContent || "",
-      ar: existingUmbracoEvent.metadataDescription?.ar || crmEvent.pageContent || "",
+      ar:
+        existingUmbracoEvent.metadataDescription?.ar ||
+        crmEvent.pageContent ||
+        "",
     },
     metadataKeywords: {
       "en-US": "",
@@ -741,13 +748,17 @@ export function mapCrmEventForUpdate(
       $invariant: `"${crmEvent.lastUpdatedDate}"`,
     },
     location: {
-      $invariant: crmEvent.location ? mapLocationToHalls(crmEvent.location) : null,
+      $invariant: crmEvent.location
+        ? mapLocationToHalls(crmEvent.location)
+        : null,
     },
     eventVenue: {
       $invariant: crmEvent.eventVenues || [],
     },
     newEventVenue: {
-      $invariant: crmEvent.location ? mapLocationCodesToArray(crmEvent.location) : [],
+      $invariant: crmEvent.location
+        ? mapLocationCodesToArray(crmEvent.location)
+        : [],
     },
     // Update page blocks while preserving existing structure and GUIDs
     pageBlocks: existingUmbracoEvent.pageBlocks
