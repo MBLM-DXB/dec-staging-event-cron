@@ -75,6 +75,8 @@ export default {
       location: string | null;
       eventType: string;
       eventOrganiser: string;
+      titleChanged: boolean;
+      previousTitle: string | undefined;
     }> = [];
     const createdEvents: Array<{
       title: string;
@@ -162,6 +164,8 @@ export default {
           location: crmEvent.location,
           eventType: crmEvent.eventType,
           eventOrganiser: crmEvent.eventOrganiser,
+          titleChanged: umbracoEvent.name !== crmEvent.title,
+          previousTitle: umbracoEvent.name !== crmEvent.title ? umbracoEvent.name : undefined,
         });
       } else {
         console.error(
