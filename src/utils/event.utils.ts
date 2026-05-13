@@ -758,9 +758,9 @@ export function mapCrmEventForUpdate(
         ? mapLocationToHalls(crmEvent.location)
         : null,
     },
-    eventVenue: {
-      $invariant: crmEvent.eventVenues || [],
-    },
+    // eventVenue: {
+    //   $invariant: crmEvent.eventVenues || [],
+    // },
     newEventVenue: {
       $invariant: crmEvent.location
         ? mapLocationCodesToArray(crmEvent.location)

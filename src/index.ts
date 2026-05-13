@@ -137,6 +137,7 @@ export default {
       delete existingEvent._updateDate;
       delete existingEvent.rel;
       delete existingEvent._links;
+      delete existingEvent.eventVenue;
 
       // Use the new update mapping function that preserves page blocks structure
       const crmEventData = mapCrmEventForUpdate(crmEvent, existingEvent);
