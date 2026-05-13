@@ -76,7 +76,7 @@ export function filterEventsByVenue(
     (event) =>
       event.eventVenues &&
       event.eventVenues.includes(venue) &&
-      event.WebsiteStatus.toLowerCase() === "online",
+      event.WebsiteStatus?.toLowerCase() === "online",
   );
   return filteredEvents;
 }
