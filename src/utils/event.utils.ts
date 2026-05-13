@@ -5,6 +5,12 @@ import type {
 } from "../types/events.types";
 import { location as locationMap } from "../constants/location";
 
+const ORG_SUFFIXES = /\s*(GmbH|LLC|L\.L\.C|FZE|FZ-LLC|Ltd)\b\.?/gi;
+
+function stripOrgSuffixes(name: string): string {
+  return name.replace(ORG_SUFFIXES, "").trim();
+}
+
 function mapLocationCodesToArray(locationCodes: string): string[] {
   return locationCodes
     .split(",")
@@ -172,7 +178,7 @@ function buildPageBlocks(crmEvent: CrmEvent) {
           },
         },
         organiserLogo: [], // TODO: Map from crmEvent.eventLogo if needed
-        organiserName: crmEvent.eventOrganiser || "",
+        organiserName: stripOrgSuffixes(crmEvent.eventOrganiser) || "",
         ...(crmEvent.websiteURL && {
           organiserWebsite: [
             {
@@ -333,7 +339,7 @@ function buildPageBlocks(crmEvent: CrmEvent) {
           },
         },
         organiserLogo: [],
-        organiserName: crmEvent.eventOrganiser || "",
+        organiserName: stripOrgSuffixes(crmEvent.eventOrganiser) || "",
         ...(crmEvent.websiteURL && {
           organiserWebsite: [
             {
@@ -511,7 +517,7 @@ function updatePageBlocks(
         settingsData: [],
       },
     };
-    eventDescBlock.organiserName = crmEvent.eventOrganiser || "";
+    eventDescBlock.organiserName = stripOrgSuffixes(crmEvent.eventOrganiser) || "";
     if (crmEvent.websiteURL) {
       eventDescBlock.organiserWebsite = [
         {
@@ -551,7 +557,7 @@ function updatePageBlocks(
       };
     }
     if (!eventDescBlock.organiserName) {
-      eventDescBlock.organiserName = crmEvent.eventOrganiser || "";
+      eventDescBlock.organiserName = stripOrgSuffixes(crmEvent.eventOrganiser) || "";
     }
     if (crmEvent.websiteURL) {
       eventDescBlock.organiserWebsite = [
@@ -627,7 +633,7 @@ export function mapCrmEventToUmbraco(
       $invariant: crmEvent.endDate,
     },
     organiserName: {
-      $invariant: crmEvent.eventOrganiser || "",
+      $invariant: stripOrgSuffixes(crmEvent.eventOrganiser) || "",
     },
     ...(crmEvent.websiteURL && {
       organiserWebsite: {
@@ -722,7 +728,7 @@ export function mapCrmEventForUpdate(
       $invariant: crmEvent.endDate,
     },
     organiserName: {
-      $invariant: crmEvent.eventOrganiser || "",
+      $invariant: stripOrgSuffixes(crmEvent.eventOrganiser) || "",
     },
     ...(crmEvent.websiteURL && {
       organiserWebsite: {
