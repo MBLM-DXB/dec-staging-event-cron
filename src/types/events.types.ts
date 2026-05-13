@@ -103,7 +103,7 @@ export interface CreateEventRequest {
   contentTypeAlias: string;
   title: LocalizedField;
   subtitle?: LocalizedField;
-  description: LocalizedField;
+  description?: LocalizedField;
   featuredImage?: InvariantField<any[]>;
   metadataTitle?: LocalizedField;
   metadataDescription?: LocalizedField;
