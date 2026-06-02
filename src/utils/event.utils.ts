@@ -14,10 +14,8 @@ function stripOrgSuffixes(name: string): string {
 function mapLocationCodesToArray(locationCodes: string): string[] {
   return locationCodes
     .split(",")
-    .map(
-      (code) =>
-        locationMap[code.trim() as keyof typeof locationMap] ?? code.trim(),
-    );
+    .filter((code) => code.trim() in locationMap)
+    .map((code) => locationMap[code.trim() as keyof typeof locationMap]);
 }
 
 function mapLocationToHalls(locationCodes: string): string {
