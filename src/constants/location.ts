@@ -17,6 +17,34 @@ export const location: Record<string, string> = {
 
   // --- CRM full display name mappings ---
 
+  // South Hall old names → new names
+  "Hall 1 South": "S19",
+  "Hall 1A South": "S19",
+  "Hall 1B South": "S19",
+  "Hall 1C South": "S19",
+  "South Hall 1": "S19",
+  "Hall 2 South": "S17",
+  "Hall 2A South": "S17",
+  "Hall 2B South": "S17",
+  "South Hall 2": "S17",
+  "Hall 3 South": "S15",
+  "South Hall 3": "S15",
+  "Hall 4 South": "S13",
+  "Hall 4A South": "S13",
+  "Hall 4B South": "S13",
+  "South Hall 4": "S13",
+
+  // North Hall old names → new names
+  "Hall 1 North": "N21",
+  "Hall 1A North": "N21",
+  "Hall 1B North": "N21",
+  "Hall 1C North": "N21",
+  "North Hall 1": "N21",
+  "Hall 2 North": "N23",
+  "Hall 2A North": "N23",
+  "Hall 2B North": "N23",
+  "North Hall 2": "N23",
+
   // S (A+B) variants — confirmed mappings
   "S5 (A+B)": "S5",
   "S7 (A+B)": "S7",
@@ -37,7 +65,4 @@ export const location: Record<string, string> = {
   "N41": "N41", "N43": "N43",
   "Pavilion N1": "Pavilion N1", "Pavilion N2": "Pavilion N2",
   "Pavilion S1": "Pavilion S1", "Pavilion S2": "Pavilion S2",
-
-  // N35B is not in the allowed list — drop by not including HN9
-  // N3–N11, S6(A+B), S8(A+B), S10(A+B), Hall X North/South → drop (not in allowed list)
 };
