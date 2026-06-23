@@ -11,6 +11,15 @@ function stripOrgSuffixes(name: string): string {
   return name.replace(ORG_SUFFIXES, "").trim();
 }
 
+export function slugifyEventName(title: string, startDate: string): string {
+  const year = new Date(startDate).getFullYear();
+  const name = title
+    .replace(/[?#[\]@!$&'()*+,;=<>\\^`{}|~]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return `${name} ${year}`;
+}
+
 function mapLocationCodesToArray(locationCodes: string): string[] {
   return locationCodes
     .split(",")
@@ -602,10 +611,6 @@ export function mapCrmEventToUmbraco(
   parentId?: string,
 ): CreateEventRequest | Omit<CreateEventRequest, "parentId"> {
   const baseData = {
-    name: {
-      "en-US": crmEvent.title,
-      ar: crmEvent.title,
-    },
     contentTypeAlias: "decEvent",
     title: {
       "en-US": crmEvent.title,

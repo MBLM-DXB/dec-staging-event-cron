@@ -3,6 +3,7 @@ export interface UmbracoEvent {
   eventId: string;
   lastUpdatedDate: string;
   name: string;
+  title: string;
 }
 
 export interface CrmEvent {
@@ -99,7 +100,7 @@ export interface BlockListStructure {
 }
 
 export interface CreateEventRequest {
-  name: LocalizedField;
+  name?: LocalizedField;
   contentTypeAlias: string;
   title: LocalizedField;
   subtitle?: LocalizedField;

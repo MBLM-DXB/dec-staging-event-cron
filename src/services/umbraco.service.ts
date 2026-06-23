@@ -34,6 +34,7 @@ export async function fetchUmbracoEvents(
                 eventId
                 lastUpdatedDate
                 name
+                title
               }
             }
           }
