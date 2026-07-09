@@ -71,6 +71,10 @@ function mapLocationToHalls(locationCodes: string): string {
 /**
  * Remove surrounding quotes from a date string if present
  */
+function normalizeDateString(dateString: string): string {
+  return dateString.replace(/^"(.*)"$/, "$1");
+}
+
 export function filterEventsByVenue(
   events: CrmEvent[],
   venue: string,
@@ -111,8 +115,13 @@ export function compareEvents(
     const crmEventId = crmEvent.eventId.toString();
     const umbracoEvent = umbracoMap.get(crmEventId);
     if (umbracoEvent) {
-      // TEST MODE: force update all events regardless of lastUpdatedDate
-      toUpdate.push({ umbracoEvent, crmEvent });
+      const normalizedCrmDate = normalizeDateString(crmEvent.lastUpdatedDate);
+      const normalizedUmbracoDate = normalizeDateString(
+        umbracoEvent.lastUpdatedDate,
+      );
+      if (normalizedCrmDate !== normalizedUmbracoDate) {
+        toUpdate.push({ umbracoEvent, crmEvent });
+      }
     } else {
       toCreate.push(crmEvent);
     }
