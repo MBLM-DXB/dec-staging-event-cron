@@ -702,8 +702,8 @@ export function mapCrmEventForUpdate(
 ): Partial<CreateEventRequest> {
   return {
     name: {
-      "en-US": crmEvent.title,
-      ar: crmEvent.title,
+      "en-US": slugifyEventName(crmEvent.title, crmEvent.startDate),
+      ar: slugifyEventName(crmEvent.title, crmEvent.startDate),
     },
     title: {
       "en-US": crmEvent.title,
