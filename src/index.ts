@@ -33,6 +33,7 @@ export default {
     const LOCK_KEY = "sync_lock";
     const LOCK_TTL = 600;
 
+    try {
     const existingLock = await env.CRON_LOCK.get(LOCK_KEY);
     if (existingLock) {
       console.log("⏸️ Sync already in progress, skipping this run.");
@@ -40,7 +41,6 @@ export default {
     }
     await env.CRON_LOCK.put(LOCK_KEY, "locked", { expirationTtl: LOCK_TTL });
 
-    try {
     console.log("🔄 Starting CRM to Umbraco sync...");
 
     const crmResponse = await fetchCrmEvents(env);
@@ -291,8 +291,16 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     if (url.pathname === "/run-cron") {
-      await this.scheduled({ cron: "manual" }, env, ctx);
-      return new Response("Cron job executed", { status: 200 });
+      try {
+        await this.scheduled({ cron: "manual" }, env, ctx);
+        return new Response("Cron job executed", { status: 200 });
+      } catch (error) {
+        console.error("❌ Manual cron run failed:", error);
+        return new Response(
+          `Cron job failed: ${error instanceof Error ? error.message : String(error)}`,
+          { status: 500 }
+        );
+      }
     }
 
     if (url.pathname === "/health" || url.pathname === "/status") {
