@@ -28,6 +28,22 @@ function mapLocationCodesToArray(locationCodes: string): string[] {
     .map((code) => locationMap[code.trim() as keyof typeof locationMap]);
 }
 
+export function hasLocationChanged(
+  crmLocation: string | null,
+  umbracoVenues: string[]
+): boolean {
+  const crmVenues = crmLocation ? [...new Set(mapLocationCodesToArray(crmLocation))] : [];
+  const a = crmVenues.sort();
+  const b = [...umbracoVenues].sort();
+  return a.length !== b.length || a.some((v, i) => v !== b[i]);
+}
+
+export function formatEventLocation(crmLocation: string | null): string {
+  if (!crmLocation) return "N/A";
+  const venues = [...new Set(mapLocationCodesToArray(crmLocation))];
+  return venues.length > 0 ? venues.join(", ") : "N/A";
+}
+
 function mapLocationToHalls(locationCodes: string): string {
   const mapped = mapLocationCodesToArray(locationCodes).map((val) =>
     val.startsWith("Pavilion ") ? val.slice("Pavilion ".length) : val,
@@ -76,7 +92,7 @@ function normalizeDateString(dateString: string): string {
   return dateString.replace(/^"(.*)"$/, "$1");
 }
 
-const CANCELLED_STATUSES = new Set(["cancelled"]);
+const CANCELLED_STATUSES = new Set(["cancelled", "post-contract cancellation"]);
 
 export function isEventCancelled(event: CrmEvent): boolean {
   return CANCELLED_STATUSES.has((event.Status || "").trim().toLowerCase());
