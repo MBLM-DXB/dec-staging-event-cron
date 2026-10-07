@@ -601,7 +601,7 @@ function buildPageBlocks(crmEvent: CrmEvent) {
 
 /**
  * Update existing page blocks with new CRM data
- * Preserves existing block structure and GUIDs, only updates event-specific content in block 2 (Event Description)
+ * Preserves existing block structure and GUIDs, only updates organiser info in block 2 (description is left as-is)
  *
  * @param existingPageBlocks - The current pageBlocks structure from Umbraco
  * @param crmEvent - New CRM event data
@@ -621,15 +621,7 @@ function updatePageBlocks(
   if (updatedEnglishBlocks.contentData && updatedEnglishBlocks.contentData[1]) {
     const eventDescBlock = updatedEnglishBlocks.contentData[1];
 
-    // Update event-specific fields only
-    eventDescBlock.description = {
-      markup: `<p>${crmEvent.pageContent || ""}</p>`,
-      blocks: {
-        layout: null,
-        contentData: [],
-        settingsData: [],
-      },
-    };
+    // Update event-specific fields only (description is never touched on update)
     eventDescBlock.organiserName = stripOrgSuffixes(crmEvent.eventOrganiser) || "";
     if (crmEvent.websiteURL) {
       eventDescBlock.organiserWebsite = [
@@ -658,17 +650,6 @@ function updatePageBlocks(
   if (updatedArabicBlocks.contentData && updatedArabicBlocks.contentData[1]) {
     const eventDescBlock = updatedArabicBlocks.contentData[1];
 
-    // Preserve existing Arabic content if present, otherwise fall back to CRM
-    if (!eventDescBlock.description?.markup) {
-      eventDescBlock.description = {
-        markup: `<p>${crmEvent.pageContent || ""}</p>`,
-        blocks: {
-          layout: null,
-          contentData: [],
-          settingsData: [],
-        },
-      };
-    }
     if (!eventDescBlock.organiserName) {
       eventDescBlock.organiserName = stripOrgSuffixes(crmEvent.eventOrganiser) || "";
     }
@@ -807,10 +788,6 @@ export function mapCrmEventForUpdate(
     title: {
       "en-US": cleanEventTitle(crmEvent.title),
       ar: existingUmbracoEvent.title?.ar || cleanEventTitle(crmEvent.title),
-    },
-    description: {
-      "en-US": crmEvent.pageContent || "",
-      ar: existingUmbracoEvent.description?.ar || crmEvent.pageContent || "",
     },
     metadataTitle: {
       "en-US": cleanEventTitle(crmEvent.title),
