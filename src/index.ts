@@ -12,6 +12,7 @@ import {
   mapCrmEventToUmbraco,
   mapCrmEventForUpdate,
   slugifyEventName,
+  cleanEventTitle,
   findCancelledLiveEvents,
   findOfflineLiveEvents,
   hasLocationChanged,
@@ -197,8 +198,8 @@ export default {
           location: formatEventLocation(crmEvent.location),
           eventType: crmEvent.eventType,
           eventOrganiser: crmEvent.eventOrganiser,
-          titleChanged: umbracoEvent.title !== crmEvent.title,
-          previousTitle: umbracoEvent.title !== crmEvent.title ? umbracoEvent.title : undefined,
+          titleChanged: umbracoEvent.title !== cleanEventTitle(crmEvent.title),
+          previousTitle: umbracoEvent.title !== cleanEventTitle(crmEvent.title) ? umbracoEvent.title : undefined,
           dateChanged:
             umbracoEvent.startDate !== crmEvent.startDate ||
             umbracoEvent.endDate !== crmEvent.endDate,
