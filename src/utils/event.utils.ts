@@ -101,12 +101,12 @@ function mapLocationToHalls(locationCodes: string): string {
  * Page Blocks Structure:
  * - English (en-US): 5 blocks total
  *   1. Hero Image (event-specific from CRM)
- *   2. Event Description with Organiser Info (event-specific from CRM)
+ *   2. Event Intro (description left empty; organiser info from CRM)
  *   3-5. Static template blocks (Getting Here, Destination Dubai)
  *
  * - Arabic (ar): 6 blocks total
  *   1. Hero Image (event-specific from CRM)
- *   2. Event Description with Organiser Info (event-specific from CRM)
+ *   2. Event Intro (description left empty; organiser info from CRM)
  *   3. Image Gallery (event-specific from CRM)
  *   4-6. Static template blocks (Getting Here, Destination Dubai in Arabic)
  */
@@ -278,12 +278,12 @@ function buildPageBlocks(crmEvent: CrmEvent) {
         udi: `umb://element/${enHeroImageGuid}`,
         image: [], // TODO: Map from crmEvent.featuredImage
       },
-      // Block 2: Event Description with Organiser Info (event-specific from CRM)
+      // Block 2: Event Intro (description left empty for editors; organiser info from CRM)
       {
         contentTypeKey: "163c1761-234c-41f4-92e5-9d3d26186b79",
         udi: `umb://element/${enEventDescGuid}`,
         description: {
-          markup: `<p>${crmEvent.pageContent || ""}</p>`,
+          markup: "", // Not populated from CRM (same as organiserLogo); editors fill it in Umbraco
           blocks: {
             layout: null,
             contentData: [],
@@ -439,12 +439,12 @@ function buildPageBlocks(crmEvent: CrmEvent) {
         udi: `umb://element/${arHeroImageGuid}`,
         image: [], // TODO: Map from crmEvent.featuredImage
       },
-      // Block 2: Event Description with Organiser Info (event-specific from CRM)
+      // Block 2: Event Intro (description left empty for editors; organiser info from CRM)
       {
         contentTypeKey: "163c1761-234c-41f4-92e5-9d3d26186b79",
         udi: `umb://element/${arEventDescGuid}`,
         description: {
-          markup: `<p>${crmEvent.pageContent || ""}</p>`,
+          markup: "", // Not populated from CRM (same as organiserLogo); editors fill it in Umbraco
           blocks: {
             layout: null,
             contentData: [],
@@ -770,7 +770,7 @@ export function mapCrmEventToUmbraco(
 
 /**
  * Map CRM event to Umbraco format for UPDATE operations
- * Preserves existing page blocks structure and only updates event-specific content
+ * Never touches description (field or Event Intro block); only updates CRM-owned fields and organiser info
  *
  * @param crmEvent - New CRM event data
  * @param existingUmbracoEvent - Current event data from Umbraco (full response object)
@@ -852,9 +852,9 @@ export function mapCrmEventForUpdate(
         ? mapLocationCodesToArray(crmEvent.location)
         : [],
     },
-    // Update page blocks while preserving existing structure and GUIDs
-    pageBlocks: existingUmbracoEvent.pageBlocks
-      ? updatePageBlocks(existingUmbracoEvent.pageBlocks, crmEvent)
-      : buildPageBlocks(crmEvent), // Fallback to new blocks if none exist
+    // Update organiser info in existing page blocks; never create blocks or touch descriptions on update
+    ...(existingUmbracoEvent.pageBlocks && {
+      pageBlocks: updatePageBlocks(existingUmbracoEvent.pageBlocks, crmEvent),
+    }),
   };
 }
