@@ -48,10 +48,11 @@ export function slugifyEventName(title: string, startDate: string): string {
 }
 
 function mapLocationCodesToArray(locationCodes: string): string[] {
-  return locationCodes
+  const venues = locationCodes
     .split(",")
     .filter((code) => code.trim() in locationMap)
     .map((code) => locationMap[code.trim() as keyof typeof locationMap]);
+  return [...new Set(venues)];
 }
 
 export function hasLocationChanged(
