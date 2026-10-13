@@ -144,7 +144,7 @@ const ALLOWED_EVENT_TYPES = new Set([
   "Exhibition",
   "Sports",
   "Conference",
-  "Brand Sales",
+  "Brand Sale", // matches Umbraco's checkbox-list option name exactly
   "Concert",
 ]);
 
