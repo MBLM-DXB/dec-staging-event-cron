@@ -65,10 +65,19 @@ export default {
     const filteredCrmEvents = filterEventsByVenue(crmResponse.data, "DEC");
     console.log(`📊 Found ${filteredCrmEvents.length} DEC events in CRM`);
 
+    // Compare cancelled events against published pages only, so unpublished ones aren't reported as live.
+    // If that fetch fails, fall back to the preview list so live events are never missed.
+    const publishedResponse = await fetchUmbracoEvents(env, false);
+    if (!publishedResponse.success) {
+      console.error(
+        "❌ Failed to fetch published Umbraco events:",
+        publishedResponse.error
+      );
+    }
     const cancelledLiveEvents = findCancelledLiveEvents(
       crmResponse.data,
       "DEC",
-      umbracoResponse.data
+      publishedResponse.success ? publishedResponse.data : umbracoResponse.data
     );
     if (cancelledLiveEvents.length > 0) {
       console.log(
