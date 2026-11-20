@@ -623,6 +623,35 @@ function buildPageBlocks(crmEvent: CrmEvent) {
  * @param crmEvent - New CRM event data
  * @returns Updated page blocks with preserved structure
  */
+/**
+ * True when an Umbraco multi-URL-picker value holds at least one link with a non-empty url.
+ * Used so an organiser website already set in Umbraco is never overwritten or removed.
+ */
+function hasOrganiserWebsite(value: unknown): boolean {
+  return (
+    Array.isArray(value) &&
+    value.some(
+      (link: any) => typeof link?.url === "string" && link.url.trim() !== "",
+    )
+  );
+}
+
+function buildOrganiserWebsite(url: string, target: string | null) {
+  return [
+    {
+      icon: "icon-link",
+      name: null,
+      nodeName: null,
+      published: true,
+      queryString: null,
+      target,
+      trashed: false,
+      udi: null,
+      url,
+    },
+  ];
+}
+
 function updatePageBlocks(
   existingPageBlocks: { "en-US": any; ar: any },
   crmEvent: CrmEvent,
@@ -639,22 +668,9 @@ function updatePageBlocks(
 
     // Update event-specific fields only (description is never touched on update)
     eventDescBlock.organiserName = stripOrgSuffixes(crmEvent.eventOrganiser) || "";
-    if (crmEvent.websiteURL) {
-      eventDescBlock.organiserWebsite = [
-        {
-          icon: "icon-link",
-          name: null,
-          nodeName: null,
-          published: true,
-          queryString: null,
-          target: null,
-          trashed: false,
-          udi: null,
-          url: crmEvent.websiteURL,
-        },
-      ];
-    } else {
-      delete eventDescBlock.organiserWebsite;
+    // organiserWebsite: keep any existing value; only fill from CRM when empty/null. Never delete.
+    if (!hasOrganiserWebsite(eventDescBlock.organiserWebsite) && crmEvent.websiteURL) {
+      eventDescBlock.organiserWebsite = buildOrganiserWebsite(crmEvent.websiteURL, null);
     }
 
     // Keep existing organiserLogo and other fields
@@ -669,22 +685,9 @@ function updatePageBlocks(
     if (!eventDescBlock.organiserName) {
       eventDescBlock.organiserName = stripOrgSuffixes(crmEvent.eventOrganiser) || "";
     }
-    if (crmEvent.websiteURL) {
-      eventDescBlock.organiserWebsite = [
-        {
-          icon: "icon-link",
-          name: null,
-          nodeName: null,
-          published: true,
-          queryString: null,
-          target: "_blank",
-          trashed: false,
-          udi: null,
-          url: crmEvent.websiteURL,
-        },
-      ];
-    } else {
-      delete eventDescBlock.organiserWebsite;
+    // organiserWebsite: keep any existing value; only fill from CRM when empty/null. Never delete.
+    if (!hasOrganiserWebsite(eventDescBlock.organiserWebsite) && crmEvent.websiteURL) {
+      eventDescBlock.organiserWebsite = buildOrganiserWebsite(crmEvent.websiteURL, "_blank");
     }
 
     // Keep existing organiserLogo and other fields
@@ -832,7 +835,9 @@ export function mapCrmEventForUpdate(
     organiserName: {
       $invariant: stripOrgSuffixes(crmEvent.eventOrganiser) || "",
     },
-    ...(crmEvent.websiteURL && {
+    // Keep any existing organiserWebsite; only fill from CRM when empty/null (existing value carries over via the merge)
+    ...(crmEvent.websiteURL &&
+      !hasOrganiserWebsite(existingUmbracoEvent.organiserWebsite?.$invariant) && {
       organiserWebsite: {
         $invariant: [
           {
